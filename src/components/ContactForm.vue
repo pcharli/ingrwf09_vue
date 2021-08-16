@@ -1,7 +1,7 @@
 <template>
   <div>
       <!-- test si switch == false -->
-    <form @submit="soumettre" v-if="!envoi" action="">
+    <form @submit.prevent="soumettre" v-if="!envoi" action="">
       <label for="">Nom :</label>
       <input type="text" required v-model.lazy.trim="newContact.nom" />
       <label for="">Prénom :</label>
@@ -13,11 +13,17 @@
       <button>Envoyer</button>
     </form>
     <!-- si switch != false -->
-    <p v-else>Message envoyé</p>
+    <p v-else>{{ notification | cap }}</p>
+    <p>{{ notification | cap }}</p>
+    <p>{{ '100' | prix }}</p>
   </div>
 </template>
 
 <script>
+import cap from '@/filters/cap.js'
+import prix from '@/filters/prix.js'
+import service from '@/services/contacts.js'
+
 export default {
   name: "",
   props: {},
@@ -29,13 +35,23 @@ export default {
             prenom:"",
             email:"",
             message:""
-        }
+        },
+        notification: "message envoyé"
     }
   },
   methods: {
       soumettre() {
-          this.envoi = true //change switch
+        service.addContact(this.newContact)
+        .then(
+         
+            this.envoi = true //change switch
+         
+        )
+        .catch(error => console.log(error))
       }
+  },
+  filters: {
+    cap, prix
   }
 };
 </script>
